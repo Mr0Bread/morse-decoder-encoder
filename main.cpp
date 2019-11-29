@@ -8,7 +8,7 @@ std::string codeToMorse(char character);
 
 char encodeMorse(std::string morse);
 
-std::string getText(const std::string& msg);
+std::string getText(const std::string &msg);
 
 void morseToText(const std::string &morse);
 
@@ -24,7 +24,7 @@ int main() {
 void textToMorse(const std::string &text) {
     for (char i : text) {
         if (i == ' ')
-            std::cout << "   ";
+            std::cout << "  ";
         else if (isalpha(i))
             std::cout << codeToMorse(tolower(i)) << ' ';
         else
@@ -33,7 +33,7 @@ void textToMorse(const std::string &text) {
     std::cout << std::endl;
 }
 
-std::string getText(const std::string& msg) {
+std::string getText(const std::string &msg) {
     std::cout << msg << "\n";
     std::string text;
     getline(std::cin, text);
@@ -150,12 +150,18 @@ void morseToText(const std::string &morse) {
     int morseSize = morse.size();
     std::string tempMorse;
     for (int i = 0; i < morseSize; i++) {
-        if (morse[i] == ' ')
+        if (morse[i] == ' ' && morse[i + 1] != ' ' && i < morseSize - 1) {
             std::cout << encodeMorse(tempMorse);
-        else if (morse[i] == ' ' && morse[i + 2] == ' ' && i < morseSize - 2)
+            tempMorse.clear();
+        } else if (morse[i] == ' ' && morse[i + 2] == ' ' && i < morseSize - 2) {
             std::cout << encodeMorse(tempMorse) << " ";
-        else
+            i += 2;
+            tempMorse.clear();
+        } else
             tempMorse += morse[i];
+        if (i == morseSize - 1)
+            std::cout << encodeMorse(tempMorse);
     }
+    putchar('\n');
 }
 
