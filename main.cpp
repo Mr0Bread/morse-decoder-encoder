@@ -1,16 +1,19 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <windows.h>
 
 void textToMorse(const std::string &text);
 
 std::string codeToMorse(char character);
 
-char encodeMorse(std::string morse);
+char decodeMorse(std::string morse);
 
 std::string getText(const std::string &msg);
 
 void morseToText(const std::string &morse);
+
+void sing_a_song(std::string &morse);
 
 int main() {
     textToMorse(getText("Enter text to convert to Morse"));
@@ -93,7 +96,7 @@ std::string codeToMorse(char character) {
     return mapForTranslateToMorse.find(character)->second;
 }
 
-char encodeMorse(std::string morse) {
+char decodeMorse(std::string morse) {
     std::map<std::string, char> mapForTranslatingFromMorse = {
             {".-",     'a'},
             {"-...",   'b'},
@@ -149,19 +152,56 @@ char encodeMorse(std::string morse) {
 void morseToText(const std::string &morse) {
     int morseSize = morse.size();
     std::string tempMorse;
+    std::string fullMorse;
+
     for (int i = 0; i < morseSize; i++) {
         if (morse[i] == ' ' && morse[i + 1] != ' ' && i < morseSize - 1) {
-            std::cout << encodeMorse(tempMorse);
+            std::cout << decodeMorse(tempMorse);
+            fullMorse += tempMorse;
+            fullMorse += " ";
             tempMorse.clear();
         } else if (morse[i] == ' ' && morse[i + 2] == ' ' && i < morseSize - 2) {
-            std::cout << encodeMorse(tempMorse) << " ";
+            std::cout << decodeMorse(tempMorse) << " ";
+            fullMorse += tempMorse;
+            fullMorse += "   ";
             i += 2;
             tempMorse.clear();
         } else
             tempMorse += morse[i];
-        if (i == morseSize - 1)
-            std::cout << encodeMorse(tempMorse);
+        if (i == morseSize - 1) {
+            std::cout << decodeMorse(tempMorse);
+            fullMorse += tempMorse;
+        }
+
     }
     putchar('\n');
+    sing_a_song(fullMorse);
+}
+
+void sing_a_song(std::string &morse) {
+    // Один такт = 200 миллисекунд
+    int beat = 100;
+    int frequency = 1000;
+    for (int i = 0; i < morse.size(); i++) {
+        if (morse[i] == '.' && morse[i + 1] != ' ' && i + 1 <= morse.size()) {
+            Beep(frequency, beat);
+            Sleep(beat);
+        } else if (morse[i] == '-' && morse[i + 1] != ' ' && i + 1 <= morse.size()) {
+            Beep(frequency, beat*3);
+            Sleep(beat);
+        } else if (morse[i] == '.' && morse[i + 1] == ' ' && morse[i + 2] != ' ' && i + 2 <= morse.size()) {
+            Beep(frequency, beat);
+            Sleep(beat*3);
+        } else if (morse[i] == '-' && morse[i + 1] ==' ' && morse[i + 2] != ' ' && i + 2 <= morse.size()) {
+            Beep(frequency, beat*3);
+            Sleep(beat*3);
+        } else if (morse[i] == '.' && morse[i + 3] == ' ' && i + 3 < morse.size()) {
+            Beep(frequency, beat);
+            Sleep(beat*7);
+        } else if (morse[i] == '-' && morse[i + 3] == ' ' && i + 3 < morse.size()) {
+            Beep(frequency, beat*3);
+            Sleep(beat*7);
+        }
+    }
 }
 
